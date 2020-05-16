@@ -42,33 +42,71 @@
     console.log("Hello World!")
   </script> -->
 
- <script src="https://static.line-scdn.net/liff/edge/versions/2.1.13/sdk.js"></script> -->
+ <script src="https://static.line-scdn.net/liff/edge/versions/2.1.13/sdk.js"></script>
   <script>
     function createUniversalLink() {
     }
 
     async function shareMsg() {
+      await liff.shareTargetPicker([
+        {
+          "type" = "text",
+          "text" = "test"
+        }
+      ])
     }
 
     function logOut() {
+      liff.logout()
+      window.location.reload()
     }
 
     function closed() {
+      liff.closedWindow()
     }
 
     async function scanCode() {
+      const result = await liff.scanCode()
+      document.getElementById("scanCode").append(result.value)
     }
 
     function openWindow() {
+      liff.openWindow({
+        url:"http://prapa.phsmun.go.th"
+        external: true
+      })
     }
 
-    async function getFriendship() {
-    }
+    //async function getFriendship() {
+    //  const friend = await liff.getFriendship()
+    //  document.getElementById("friendship").append(friend.friendFlag)
+    //  if(!friend.friendFlag){
+    //    if(confirm("คุณยังไม่ได้เพิ่ม Bot เป็นเพื่อน จะเพิ่มเลยไหม?")){
+    //      window.location = "#"
+    //    }
+    //  } 
+      
+    //}
 
     async function sendMsg() {
+      if(liff.getContext().type !== "none" ){
+        await liff.sendMessages([
+          {
+            "type": "sticker",
+            "stickerId": 1,
+            "packageId": 1
+          }
+        ])
+          alert(" Message sent ")
+      }
     }
 
     function getContext() {
+      document.getElementById("type").append(liff.getContext().type)
+      document.getElementById("viewType").append(liff.getContext().viewType)
+      document.getElementById("utouId").append(liff.getContext().utouId)
+      document.getElementById("roomId").append(liff.getContext().roomId)
+      document.getElementById("groupId").append(liff.getContext().groupId)
     }
 
     async function getUserProfile() {
@@ -77,6 +115,7 @@
       document.getElementById("userId").append(profile.userId)
       document.getElementById("statusMessage").append(profile.statusMessage)
       document.getElementById("displayName").append(profile.displayName)
+      document.getElementById("decodedIDToken").append(liff.getDecodedIDToken().email)
     }
 
     function getEnvironment() {
@@ -97,11 +136,16 @@
     async function main() {
      
       await liff.init({ liffId: "1654221946-eDyM1gba" })
+       document.getElementById("isLoggedIn").append(liff.isLoggedIn())
+       if(liff.isLoggedIn()){
        getEnvironment()
        getUserProfile()
-      // getContext()
-      // getFriendship()
+       getContext()
+       getFriendship()
       // createUniversalLink()
+       } else {
+         liff.login()
+       }
     }
     main()
   </script>
